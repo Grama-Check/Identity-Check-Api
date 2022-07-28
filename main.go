@@ -11,5 +11,5 @@ func main() {
 
 	authGroup.POST("/", IdentityCheck)
 
-	router.Run()
+	router.Run(":9000")
 }
