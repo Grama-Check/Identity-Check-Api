@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
+	"github.com/Grama-Check/Address-Check-Api/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,13 +15,8 @@ var data map[string]int = map[string]int{
 	"jh":     27,
 }
 
-type userData struct {
-	UID int    `json:"uid"`
-	ID  string `json:"ID"`
-}
-
 func IdentityCheck(c *gin.Context) {
-	user := userData{}
+	user := models.UserData{}
 
 	err := c.BindJSON(&user)
 
@@ -29,5 +24,16 @@ func IdentityCheck(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "Couldn't parse json request")
 	}
 
-	log.Print(user)
+	name, ok := data[user.ID]
+	if ok {
+		c.JSON(
+			http.StatusOK,
+			gin.H{
+				"great": name,
+			},
+		)
+		return
+	}
+	c.AbortWithStatusJSON(http.StatusBadRequest, "Individual is not in data")
+
 }
