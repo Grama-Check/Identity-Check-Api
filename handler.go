@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"os"
 
 	db "github.com/Grama-Check/Address-Check-Api/db/sqlc"
 	"github.com/Grama-Check/Address-Check-Api/models"
@@ -25,6 +26,7 @@ func init() {
 
 	if err != nil {
 		log.Fatal("Cannot connect to database")
+		os.Exit(123)
 	}
 
 	queries = db.New(conn)
@@ -43,22 +45,14 @@ func IdentityCheck(c *gin.Context) {
 
 	_, err = queries.GetPerson(ctx, user.ID)
 
-	if err == nil {
-		c.JSON(
-			http.StatusOK,
-			gin.H{
-				"Person exists": 1,
-			},
-		)
-		return
-	} else {
-		c.JSON(
-			http.StatusOK,
-			gin.H{
-				"Person exists": 0,
-			},
-		)
-	}
-	c.AbortWithStatusJSON(http.StatusBadRequest, "Individual is not in data")
+	exists := err == nil
+
+	c.JSON(
+		http.StatusOK,
+		gin.H{
+			"uid":    user.UID,
+			"exists": exists,
+		},
+	)
 
 }
