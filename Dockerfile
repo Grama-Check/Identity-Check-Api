@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.18.3-alpine
+# Build stage
+
+FROM golang:1.18.3-alpine AS builder
 
 WORKDIR /app
 
@@ -13,6 +15,13 @@ COPY . .
 
 RUN go build -o /identity-check
 
+# Run Stage
+
+FROM alpine:3.16
+
+WORKDIR /app
+COPY --from=builder  identity-check .
+
 EXPOSE 9000
 
-CMD [ "/identity-check" ]
+CMD [ "./identity-check" ]

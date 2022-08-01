@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
-	"log"
 	"net/http"
-	"os"
 
 	db "github.com/Grama-Check/Address-Check-Api/db/sqlc"
 	"github.com/Grama-Check/Address-Check-Api/models"
@@ -20,13 +18,12 @@ const (
 	dbSource = "postgresql://root:secret@localhost:5000/persons?sslmode=disable"
 )
 
-func init() {
+func conn(c *gin.Context) {
 
 	conn, err := sql.Open(dbDriver, dbSource)
 
 	if err != nil {
-		log.Fatal("Cannot connect to database")
-		os.Exit(123)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
 	}
 
 	queries = db.New(conn)
@@ -38,6 +35,7 @@ func IdentityCheck(c *gin.Context) {
 	user := models.UserData{}
 
 	err := c.BindJSON(&user)
+	conn(c)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "Couldn't parse json request")
