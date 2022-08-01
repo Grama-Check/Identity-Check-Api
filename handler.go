@@ -3,43 +3,55 @@ package main
 import (
 	"context"
 	"database/sql"
+	"log"
 	"net/http"
 
 	db "github.com/Grama-Check/Address-Check-Api/db/sqlc"
 	"github.com/Grama-Check/Address-Check-Api/models"
+	"github.com/Grama-Check/Address-Check-Api/util"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 var queries *db.Queries
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5000/persons?sslmode=disable"
-)
+// const (
+// 	dbDriver = "postgres"
+// 	dbSource = "postgresql://root:secret@localhost:5000/persons?sslmode=disable"
+// )
 
-func conn(c *gin.Context) {
+var config util.Config
 
-	conn, err := sql.Open(dbDriver, dbSource)
-
+func init() {
+	var err error
+	config, err = util.LoadConfig(".")
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
+		log.Fatal("Cannot load config")
+
 	}
-
-	queries = db.New(conn)
-
 }
 
 func IdentityCheck(c *gin.Context) {
+
 	ctx := context.Background()
 	user := models.UserData{}
 
 	err := c.BindJSON(&user)
-	conn(c)
-
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "Couldn't parse json request")
+		return
 	}
+
+	// Send a ping to make sure the database connection is alive.
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
+	err2 := conn.Ping()
+
+	if err != nil || err2 != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
+		return
+	}
+
+	queries = db.New(conn)
 
 	_, err = queries.GetPerson(ctx, user.ID)
 
