@@ -21,6 +21,8 @@ FROM alpine:3.16
 
 WORKDIR /app
 COPY --from=builder  identity-check .
+COPY  public.pem . 
+COPY  app.env . 
 
 EXPOSE 9000
 

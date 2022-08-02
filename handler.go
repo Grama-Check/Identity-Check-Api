@@ -56,7 +56,6 @@ func IdentityCheck(c *gin.Context) {
 	_, err = queries.GetPerson(ctx, user.ID)
 
 	exists := err == nil
-
 	c.JSON(
 		http.StatusOK,
 		gin.H{
