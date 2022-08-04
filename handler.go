@@ -59,7 +59,7 @@ func IdentityCheck(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,
 		gin.H{
-			"uid":    user.NIC,
+			"nic":    user.NIC,
 			"exists": exists,
 		},
 	)
