@@ -12,6 +12,7 @@ func main() {
 	authGroup := router.Group("/").Use(middleware.AuthMiddleware())
 
 	authGroup.POST("/", IdentityCheck)
+	authGroup.POST("/create", CreatePerson)
 
 	router.Run(":8080")
 }
