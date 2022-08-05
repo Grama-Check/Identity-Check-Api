@@ -24,6 +24,6 @@ COPY --from=builder  identity-check .
 COPY  public.pem . 
 COPY  app.env . 
 
-EXPOSE 9000
+EXPOSE 8080
 
 CMD [ "./identity-check" ]

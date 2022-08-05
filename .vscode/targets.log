@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Aug  4 15:25:24 2022
+# Make data base, printed on Fri Aug  5 15:17:38 2022
 
 # Variables
 
@@ -33,7 +33,7 @@ SHELL = /bin/sh
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
 # environment
-STARSHIP_SESSION_KEY = 1441310757276712
+STARSHIP_SESSION_KEY = 2627216255144582
 # 'override' directive
 GNUMAKEFLAGS := 
 # environment
@@ -57,7 +57,7 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 PYENV_ROOT = /home/jhivanb/.pyenv
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-c09401f8-8e7d-46b7-ba95-c6db43d514c5.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-40e20ee3-67f4-473d-a8cc-d840489c8dc0.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # automatic
@@ -69,9 +69,9 @@ PWD = /home/jhivanb/code/Identity-Check-Api
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/10_interop
+WSL_INTEROP = /run/WSL/1689_interop
 # environment
-WT_SESSION = d4104b02-02bd-471d-8fdc-ee7dbbfa3850
+WT_SESSION = 1c52ddd2-9616-496b-9d31-f91ccc10da81
 # environment
 GOMODCACHE = /home/jhivanb/golib/pkg/mod
 # environment
@@ -263,6 +263,6 @@ migratedown:
 # strcache performance: lookups = 52 / hit rate = 34%
 # hash-table stats:
 # Load=34/8192=0%, Rehash=0, Collisions=1/52=2%
-# Finished Make data base on Thu Aug  4 15:25:24 2022
+# Finished Make data base on Fri Aug  5 15:17:38 2022
 
  
