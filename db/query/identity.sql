@@ -1,6 +1,6 @@
 -- name: CreatePerson :one
 INSERT INTO persons (
-    id,
+    nic,
     name,
     address
 ) VALUES (
@@ -11,6 +11,6 @@ RETURNING *;
 
 -- name: GetPerson :one
 SELECT * FROM persons
-WHERE id = $1;
+WHERE nic = $1;
 
 

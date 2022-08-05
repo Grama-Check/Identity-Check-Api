@@ -7,7 +7,7 @@ package db
 import ()
 
 type Person struct {
-	ID      string `json:"id"`
+	Nic     string `json:"nic"`
 	Name    string `json:"name"`
 	Address string `json:"address"`
 }

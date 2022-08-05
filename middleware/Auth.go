@@ -32,8 +32,14 @@ func AuthMiddleware() gin.HandlerFunc {
 		authHeader := c.GetHeader("Authorization")
 
 		if len(authHeader) == 0 {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
+
+			authHeader = c.GetHeader("authorization")
+			log.Println("No token present in Auth")
+
+			if len(authHeader) == 0 {
+				log.Println("No token present")
+				c.AbortWithStatusJSON(http.StatusUnauthorized, "No token present")
+			}
 		}
 
 		fields := strings.Fields(authHeader)
@@ -48,7 +54,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			return rsaPublicKey, nil
 		})
 		if !parsedToken.Valid || err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
+
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "Token not valid")
 			return
 		}
 		c.Next()

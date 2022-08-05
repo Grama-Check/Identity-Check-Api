@@ -1,6 +1,11 @@
 package models
 
 type UserData struct {
-	UID int    `json:"uid"`
-	ID  string `json:"id"`
+	NIC string `json:"nic"`
+}
+
+type PersonData struct {
+	NIC     string `json:"nic"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
 }

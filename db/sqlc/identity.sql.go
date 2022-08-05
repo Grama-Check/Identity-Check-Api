@@ -11,37 +11,37 @@ import (
 
 const createPerson = `-- name: CreatePerson :one
 INSERT INTO persons (
-    id,
+    nic,
     name,
     address
 ) VALUES (
     $1,
     $2,
     $3)
-RETURNING id, name, address
+RETURNING nic, name, address
 `
 
 type CreatePersonParams struct {
-	ID      string `json:"id"`
+	Nic     string `json:"nic"`
 	Name    string `json:"name"`
 	Address string `json:"address"`
 }
 
 func (q *Queries) CreatePerson(ctx context.Context, arg CreatePersonParams) (Person, error) {
-	row := q.db.QueryRowContext(ctx, createPerson, arg.ID, arg.Name, arg.Address)
+	row := q.db.QueryRowContext(ctx, createPerson, arg.Nic, arg.Name, arg.Address)
 	var i Person
-	err := row.Scan(&i.ID, &i.Name, &i.Address)
+	err := row.Scan(&i.Nic, &i.Name, &i.Address)
 	return i, err
 }
 
 const getPerson = `-- name: GetPerson :one
-SELECT id, name, address FROM persons
-WHERE id = $1
+SELECT nic, name, address FROM persons
+WHERE nic = $1
 `
 
-func (q *Queries) GetPerson(ctx context.Context, id string) (Person, error) {
-	row := q.db.QueryRowContext(ctx, getPerson, id)
+func (q *Queries) GetPerson(ctx context.Context, nic string) (Person, error) {
+	row := q.db.QueryRowContext(ctx, getPerson, nic)
 	var i Person
-	err := row.Scan(&i.ID, &i.Name, &i.Address)
+	err := row.Scan(&i.Nic, &i.Name, &i.Address)
 	return i, err
 }
