@@ -7,26 +7,33 @@ import (
 	"net/http"
 
 	db "github.com/Grama-Check/Address-Check-Api/db/sqlc"
+	"github.com/Grama-Check/Address-Check-Api/util"
 
 	"github.com/Grama-Check/Address-Check-Api/models"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
-var queries *db.Queries
+var config util.Config
 var conn *sql.DB
 
 func init() {
-	// Send a ping to make sure the database connection is alive.
-	conn, err := db.Conn()
-	err2 := conn.Ping()
+	var err error
+	config, err = util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Cannot load config")
 
-	if err != nil || err2 != nil {
-		log.Println("Cannot connect to database")
+	}
+	conn, err = sql.Open(config.DBDriver, config.DBSource)
+
+	//conn, err := sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Println("HELP")
 		return
 	}
-	queries = db.New(conn)
+
 }
+
 func IdentityCheck(c *gin.Context) {
 
 	ctx := context.Background()
@@ -37,10 +44,12 @@ func IdentityCheck(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "Couldn't parse json request")
 		return
 	}
-
-	if err2 := conn.Ping(); err2 != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, "Is not connected to db")
+	// Send a ping to make sure the database connection is alive.
+	if err := conn.Ping(); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
+		return
 	}
+	queries := db.New(conn)
 
 	_, err = queries.GetPerson(ctx, user.NIC)
 
@@ -66,15 +75,13 @@ func CreatePerson(c *gin.Context) {
 		log.Println("Couldn't bind input to person model")
 	}
 	// Send a ping to make sure the database connection is alive.
-	conn, err := db.Conn()
-	err2 := conn.Ping()
 
-	if err != nil || err2 != nil {
+	if err = conn.Ping(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
 		return
 	}
 
-	queries = db.New(conn)
+	queries := db.New(conn)
 
 	args := db.CreatePersonParams{
 		Name:    person.Name,
