@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"log"
 	"net/http"
 
@@ -13,12 +14,19 @@ import (
 )
 
 var queries *db.Queries
+var conn *sql.DB
 
-// const (
-// 	dbDriver = "postgres"
-// 	dbSource = "postgresql://root:secret@localhost:5000/persons?sslmode=disable"
-// )
+func init() {
+	// Send a ping to make sure the database connection is alive.
+	conn, err := db.Conn()
+	err2 := conn.Ping()
 
+	if err != nil || err2 != nil {
+		log.Println("Cannot connect to database")
+		return
+	}
+	queries = db.New(conn)
+}
 func IdentityCheck(c *gin.Context) {
 
 	ctx := context.Background()
@@ -30,20 +38,14 @@ func IdentityCheck(c *gin.Context) {
 		return
 	}
 
-	// Send a ping to make sure the database connection is alive.
-	conn, err := db.Conn()
-	err2 := conn.Ping()
-
-	if err != nil || err2 != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
-		return
+	if err2 := conn.Ping(); err2 != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, "Is not connected to db")
 	}
-
-	queries = db.New(conn)
 
 	_, err = queries.GetPerson(ctx, user.NIC)
 
 	exists := err == nil
+	log.Println(user.NIC, ":", exists)
 	c.JSON(
 		http.StatusOK,
 		gin.H{
