@@ -2,22 +2,37 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"log"
 	"net/http"
 
 	db "github.com/Grama-Check/Address-Check-Api/db/sqlc"
+	"github.com/Grama-Check/Address-Check-Api/util"
 
 	"github.com/Grama-Check/Address-Check-Api/models"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
-var queries *db.Queries
+var config util.Config
+var conn *sql.DB
 
-// const (
-// 	dbDriver = "postgres"
-// 	dbSource = "postgresql://root:secret@localhost:5000/persons?sslmode=disable"
-// )
+func init() {
+	var err error
+	config, err = util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Cannot load config")
+
+	}
+	conn, err = sql.Open(config.DBDriver, config.DBSource)
+
+	//conn, err := sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Println("HELP")
+		return
+	}
+
+}
 
 func IdentityCheck(c *gin.Context) {
 
@@ -29,21 +44,17 @@ func IdentityCheck(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "Couldn't parse json request")
 		return
 	}
-
 	// Send a ping to make sure the database connection is alive.
-	conn, err := db.Conn()
-	err2 := conn.Ping()
-
-	if err != nil || err2 != nil {
+	if err := conn.Ping(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
 		return
 	}
-
-	queries = db.New(conn)
+	queries := db.New(conn)
 
 	_, err = queries.GetPerson(ctx, user.NIC)
 
 	exists := err == nil
+	log.Println(user.NIC, ":", exists)
 	c.JSON(
 		http.StatusOK,
 		gin.H{
@@ -64,15 +75,13 @@ func CreatePerson(c *gin.Context) {
 		log.Println("Couldn't bind input to person model")
 	}
 	// Send a ping to make sure the database connection is alive.
-	conn, err := db.Conn()
-	err2 := conn.Ping()
 
-	if err != nil || err2 != nil {
+	if err = conn.Ping(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, "Cannot connect to database")
 		return
 	}
 
-	queries = db.New(conn)
+	queries := db.New(conn)
 
 	args := db.CreatePersonParams{
 		Name:    person.Name,
