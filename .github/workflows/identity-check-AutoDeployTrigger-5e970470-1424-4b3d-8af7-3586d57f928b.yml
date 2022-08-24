@@ -52,4 +52,4 @@ jobs:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp registry set -n identity-check -g asgardeo-intern-project --server gramacheckservices.azurecr.io --username  ${{ secrets.IDENTITYCHECK_REGISTRY_USERNAME }} --password ${{ secrets.IDENTITYCHECK_REGISTRY_PASSWORD }}
-            az containerapp update -n identity-check -g asgardeo-intern-project --image gramacheckservices.azurecr.io/gramacheck/identity-check:${{ github.event.release.tag_name }} --revision-suffix v.${{ github.event.release.tag_name }} 
+            az containerapp update -n identity-check -g asgardeo-intern-project --revision-suffix v${{ github.event.release.tag_name }}  --image gramacheckservices.azurecr.io/gramacheck/identity-check:${{ github.event.release.tag_name }} 
