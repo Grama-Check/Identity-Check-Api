@@ -2,13 +2,8 @@ name: Trigger auto deployment for identity-check
 
 # When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
-  push:
-    branches: 
-      [ master ]
-    paths:
-    - '**'
-    - '.github/workflows/identity-check-AutoDeployTrigger-5e970470-1424-4b3d-8af7-3586d57f928b.yml'
+  release:
+    types: [published]
 
   # Allow mannually trigger 
   workflow_dispatch:      
@@ -35,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: gramacheckservices.azurecr.io/gramacheck/identity-check:${{ github.sha }}
+          tags: gramacheckservices.azurecr.io/gramacheck/identity-check:${{ github.event.release.tag_name }}
           file: ./Dockerfile
           context: ./
 
@@ -57,4 +52,4 @@ jobs:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp registry set -n identity-check -g asgardeo-intern-project --server gramacheckservices.azurecr.io --username  ${{ secrets.IDENTITYCHECK_REGISTRY_USERNAME }} --password ${{ secrets.IDENTITYCHECK_REGISTRY_PASSWORD }}
-            az containerapp update -n identity-check -g asgardeo-intern-project --image gramacheckservices.azurecr.io/gramacheck/identity-check:${{ github.sha }}
+            az containerapp update -n identity-check -g asgardeo-intern-project --image gramacheckservices.azurecr.io/gramacheck/identity-check:${{ github.event.release.tag_name }}
