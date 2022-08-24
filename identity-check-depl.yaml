@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-check
+  namespace: test
+  labels:
+    app: identity-check
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-check
+  template:
+    metadata:
+      labels:
+        app: identity-check
+    spec:
+      containers:
+      - name: identitycheck
+        image: gramacheckservices.azurecr.io/gramacheck/identitycheck:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: acr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-check-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: identity-check
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
